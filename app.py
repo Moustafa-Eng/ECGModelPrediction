@@ -1,10 +1,10 @@
+import os
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
 import cv2
 import joblib
-import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
