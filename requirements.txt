@@ -4,6 +4,6 @@ numpy
 opencv-python
 joblib
 scikit-learn
-keras
-tensorflow>=2.9.0
+tensorflow==2.16.2
+selenium
 
