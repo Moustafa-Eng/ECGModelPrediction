@@ -1,7 +1,7 @@
 import joblib
 from flask import Flask, request, jsonify
 import numpy as np
-from model_loader import model
+
 def load_model(model_path):
     model = joblib.load(model_path)
     return model
