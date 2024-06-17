@@ -1,13 +1,11 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import numpy as np
 import cv2
 import joblib
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
 
 # Load the saved model
 model_path = "trained_model5_inceptionv3old.joblib"
@@ -111,6 +109,5 @@ def index():
     return "Hello, World!"
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=True)
 
