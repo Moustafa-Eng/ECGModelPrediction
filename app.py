@@ -1,112 +1,36 @@
+import joblib
 from flask import Flask, request, jsonify
 import numpy as np
-import cv2
-import joblib
+from model_loader import model
+def load_model(model_path):
+    model = joblib.load(model_path)
+    return model
+
+# Load the model once, so it can be reused across requests
+model = load_model('trained_model5_inceptionv3old.joblib')
+
+
+
 
 app = Flask(__name__)
-
-
-# Load the saved model
-model_path = "trained_model5_inceptionv3old.pkl"
-try:
-    loaded_model = joblib.load(model_path)
-    print(f"Model loaded successfully from {model_path}")
-except Exception as e:
-    print(f"Error loading the model: {str(e)}")
-    loaded_model = None
-
-# Define cropping dimensions
-top_crop = 250  # Pixels from the top
-bottom_crop = 100  # Pixels from the bottom
-
-# Define image size
-image_size = (299, 299)
-
-# Define the lower and upper bounds for white color (used in mask creation)
-lower_white = np.array([50, 50, 50], dtype=np.uint8)
-upper_white = np.array([255, 255, 255], dtype=np.uint8)
-
-# Class labels for the predictions
-class_labels = [
-    'Patient that have History of MI',
-    'Myocardial Infarction Patients',
-    'Normal Person',
-    'Patient that have abnormal heart beats',
-    'COVID-19 Patients'
-]
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Check if the model is loaded
-        if loaded_model is None:
-            return jsonify({"error": "Model is not loaded properly."}), 500
-
-        # Get the image file from the request
-        img_file = request.files.get('image')
-        if img_file is None:
-            return jsonify({"error": "No image file found in the request."}), 400
+        # Get the JSON data from the request
+        data = request.get_json(force=True)
         
-        # Read the image
-        img = cv2.imdecode(np.frombuffer(img_file.read(), np.uint8), cv2.IMREAD_COLOR)
+        # Convert the JSON data to a numpy array (adjust as needed for your model)
+        input_data = np.array(data['input']).reshape(1, -1)
         
-        # Check if the image is loaded successfully
-        if img is None:
-            return jsonify({"error": "Failed to decode the image."}), 400
+        # Make a prediction using the pre-loaded model
+        prediction = model.predict(input_data)
         
-        # Crop the image
-        cropped_img = img[top_crop:-bottom_crop, :]
-
-        # Apply bilateral filter to remove noise
-        img_filtered = cv2.bilateralFilter(cropped_img, d=9, sigmaColor=75, sigmaSpace=75)
-
-        # Create a mask to identify white areas in the image
-        mask = cv2.inRange(img_filtered, lower_white, upper_white)
-
-        # Morphological operation to remove small white points
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)))
-
-        # Invert the mask
-        mask = cv2.bitwise_not(mask)
-
-        # Create a white background image
-        bk = np.full(cropped_img.shape, 255, dtype=np.uint8)
-
-        # Apply the mask to the foreground image
-        fg_masked = cv2.bitwise_and(cropped_img, cropped_img, mask=mask)
-
-        # Invert the mask again
-        mask = cv2.bitwise_not(mask)
-
-        # Apply the mask to the background image
-        bk_masked = cv2.bitwise_and(bk, bk, mask=mask)
-
-        # Combine the foreground and background images
-        final = cv2.bitwise_or(fg_masked, bk_masked)
-
-        # Resize the preprocessed image to match the model input size
-        resized_photo = cv2.resize(final, image_size)
-
-        # Normalize pixel values
-        normalized_photo = resized_photo / 255.0
-
-        # Expand dimensions to match the model input shape
-        expanded_photo = np.expand_dims(normalized_photo, axis=0)
-
-        # Make prediction
-        prediction = loaded_model.predict(expanded_photo)
-
-        # Get the predicted category
-        predicted_category = class_labels[np.argmax(prediction)]
-
-        return jsonify({"predicted_category": predicted_category})
+        # Return the prediction as a JSON response
+        return jsonify({'prediction': prediction.tolist()})
+    
     except Exception as e:
-        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
-
-@app.route('/')
-def index():
-    return "Hello, World!"
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)
-
