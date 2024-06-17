@@ -2,7 +2,9 @@ gunicorn
 Flask
 Flask-CORS
 numpy
-opencv-python-headless
+opencv-python-headless>=4.5.5.64
 joblib
 scikit-learn
 keras
+tensorflow>=2.9.0
+
