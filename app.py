@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 import numpy as np
 import cv2
 import tensorflow as tf
-import keras.src.models.functional
 app = Flask(__name__)
 
 model_path = "trained_model5_inceptionv3old.keras"
