@@ -1,9 +1,7 @@
 gunicorn
 Flask
-numpy<2.0.0
+numpy
 opencv-python
-joblib
-keras
 tensorflow
 
 
