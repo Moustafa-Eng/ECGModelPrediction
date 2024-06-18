@@ -4,7 +4,7 @@ import cv2
 import tensorflow as tf
 app = Flask(__name__)
 
-model_path = "trained_model5_inceptionv3old.h5"
+model_path = "trained_model5_inceptionv3old.keras"
 
 def load_model(model_path):
     try:
