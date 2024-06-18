@@ -1,8 +1,9 @@
 gunicorn
-Flask
-numpy<2.0.0
+Flask==3.0.3
+numpy==1.26.4
+keras==3.2.1
 tensorflow==2.16.1
-opencv-python
+opencv-python==4.10.0.82
 
 
 
