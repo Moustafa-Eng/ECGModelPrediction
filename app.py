@@ -2,13 +2,13 @@ from flask import Flask, request, jsonify
 import numpy as np
 import cv2
 import joblib
-
+import tensorflow as tf
 app = Flask(__name__)
 
 # Load the saved model
-model_path = "trained_model5_inceptionv3old.joblib"
+model_path = "trained_model5_inceptionv3old.h5"
 try:
-    loaded_model = joblib.load(model_path)
+    loaded_model = tf.keras.models.load_model(model_path)
     print(f"Model loaded successfully from {model_path}")
 except Exception as e:
     print(f"Error loading the model: {str(e)}")
