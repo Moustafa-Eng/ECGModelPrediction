@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify
 import numpy as np
 import cv2
-import os
-import sklearn
-import tensorflow as tf
+import keras
 app = Flask(__name__)
 
 model_path = "trained_model5_inceptionv3old.keras"
@@ -11,7 +9,7 @@ model_path = "trained_model5_inceptionv3old.keras"
 def load_model(model_path):
     try:
         # Attempt to load as a Keras model
-        model = tf.keras.models.load_model(model_path)
+        model = keras.models.load_model(model_path)
         print(f"Model loaded successfully")
         return model
     except Exception as e:
