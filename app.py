@@ -2,21 +2,35 @@ from flask import Flask, request, jsonify
 import numpy as np
 import cv2
 import keras
+import tensorflow
+import gdown
 app = Flask(__name__)
 
-model_path = "trained_model5_inceptionv3old.keras"
 
-def load_model(model_path):
+# Google Drive file ID
+file_id = '1Qfi3cT2cWTLs_bUtc5auS5l0ttujIsij'
+# Google Drive download URL
+url = f'https://drive.google.com/uc?id={file_id}'
+# Output file name
+output = 'model.h5'
+
+# Download the file from Google Drive
+gdown.download(url, output, quiet=False)
+
+
+# Use the model for predictions or further processing
+
+def load_model(output):
     try:
         # Attempt to load as a Keras model
-        model = keras.models.load_model(model_path)
+        model = keras.models.load_model(output)
         print(f"Model loaded successfully")
         return model
     except Exception as e:
         print(f"Error loading model: {str(e)}")
         return None
 
-loaded_model = load_model(model_path)
+loaded_model = load_model(output)
 
 # Define cropping dimensions
 top_crop = 250
@@ -26,11 +40,11 @@ lower_white = np.array([50, 50, 50], dtype=np.uint8)
 upper_white = np.array([255, 255, 255], dtype=np.uint8)
 class_labels = [
     'Patient that have History of MI',
-    'Myocardial Infarction Patients',
-    'Normal Person',
-    'Patient that have abnormal heart beats',
-    'COVID-19 Patients'
-]
+    'Patient that have abnormal heart beats', 
+    'COVID-19 Patient', 
+    'Normal Person', 
+    'Myocardial Infarction Patient'
+    ]
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -72,3 +86,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
