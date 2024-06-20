@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import gdown
 import keras
+import flask_cors
 app = Flask(__name__)
 
 
